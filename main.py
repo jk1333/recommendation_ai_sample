@@ -135,11 +135,6 @@ col1, col2 = st.columns([2, 1])
 col1.text_input("Search", "", key="search", on_change=on_search_change)
 col2.text_input("UserId", "visitor1", key="userid", on_change=on_user_change)
 
-if not st.session_state.recommendations:
-    #Get initial recommends
-    st.session_state.recommendations["movielens-recommendation"] = get_predict(
-        "movielens-recommendation", "home-page-view", st.session_state.userid, view_size)
-
 def get_whole_recommends(clicked_view, clicked_item, max_num):
     whole_recommends = {}
     recommends = get_predict("movielens-pageoptimization", clicked_view, st.session_state.userid, max_num, clicked_item)
@@ -170,6 +165,11 @@ def render_view(model, view, clicked_product_id, recommends):
     for idx, col in enumerate(cols):
         col.button(get_movie_title(recommends[idx]), key=model+recommends[idx], on_click=on_item_click, args=[view, recommends[idx]])
 
+if not st.session_state.recommendations:
+    #Get initial recommends
+    st.session_state.recommendations["movielens-recommendation"] = get_predict(
+        "movielens-recommendation", "home-page-view", st.session_state.userid, view_size)
+    
 #Rendering cached items
 for model, recommends in st.session_state.recommendations.items():
     #Rendering items
