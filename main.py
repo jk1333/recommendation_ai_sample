@@ -51,8 +51,6 @@ def init_services():
     get_prediction_service()
     get_search_service()
     get_userevent_service()
-    st.session_state.recommendations = {}
-    st.session_state.clicked_product_id = None
     return pd.read_csv("movies.csv")
 
 movies_df = init_services()
@@ -129,7 +127,7 @@ def on_search_change():
     
 def on_user_change():
     if len(st.session_state.userid) > 0:
-        st.session_state.recommendations.clear()
+        del st.session_state["recommendations"]
 
 col1, col2 = st.columns([2, 1])
 col1.text_input("Search", "", key="search", on_change=on_search_change)
@@ -165,8 +163,10 @@ def render_view(model, view, clicked_product_id, recommends):
     for idx, col in enumerate(cols):
         col.button(get_movie_title(recommends[idx]), key=model+recommends[idx], on_click=on_item_click, args=[view, recommends[idx]])
 
-if not st.session_state.recommendations:
+if "recommendations" not in st.session_state:
     #Get initial recommends
+    st.session_state.recommendations = {}
+    st.session_state.clicked_product_id = None
     st.session_state.recommendations["movielens-recommendation"] = get_predict(
         "movielens-recommendation", "home-page-view", st.session_state.userid, view_size)
     
